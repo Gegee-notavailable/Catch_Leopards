@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leopard Detection Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <main class="monitor-section">
+            <div id="status-badge" class="status-normal">No Detection</div>
+            <div class="video-container">
+                <img id="live-stream" src="assets/mock-test/leopard.jpg" alt="Live Stream">
+                <div id="scanner" class="scanner-line"></div> </div>
+        </main>
+
+        <aside class="history-section">
+            <h2>Detection History</h2>
+            <div class="table-wrapper">
+                <table id="history-table">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Target</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-body">
+                        </tbody>
+                </table>
+            </div>
+        </aside>
+    </div>
+
+    <script src="app.js" type="module"></script>
+</body>
+</html>
