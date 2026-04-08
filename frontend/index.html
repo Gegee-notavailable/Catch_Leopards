@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Leopard Detection</title>
     <link rel="stylesheet" href="./styles/style.css">
 </head>
+
 <body>
     <div class="app-container">
         <header>
@@ -15,7 +17,7 @@
 
         <div class="main-layout">
             <section class="video-monitor">
-                <div class="video-card">
+                <div class="video-container">
                     <img id="live-stream" src="./assets/mock-test/leopard.jpg" alt="Live Feed">
                     <div id="scanner" class="scanner-line"></div>
                 </div>
@@ -25,12 +27,13 @@
                 <h2>Recent Logs</h2>
                 <div class="log-container">
                     <ul id="history-body">
-                        </ul>
+                    </ul>
                 </div>
             </aside>
         </div>
     </div>
-    
+
     <script type="module" src="./scripts/app.js"></script>
 </body>
+
 </html>
