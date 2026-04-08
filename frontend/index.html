@@ -7,21 +7,30 @@
     <link rel="stylesheet" href="./styles/style.css">
 </head>
 <body>
-    <div id="app">
-        <h1>Leopard Detection Dashboard</h1>
-        <div id="status-badge" class="status-normal">Connecting...</div>
-        
-        <div class="video-container">
-            <img id="live-stream" src="./assets/mock-test/leopard.jpg" alt="Live Feed">
-            <div id="scanner" class="scanner-line"></div>
-        </div>
+    <div class="app-container">
+        <header>
+            <h1>Leopard Detection Dashboard</h1>
+            <div id="status-badge" class="status-normal">Connecting...</div>
+        </header>
 
-        <div class="history-list">
-            <h2>Recent Logs</h2>
-            <ul id="history-body"></ul>
+        <div class="main-layout">
+            <section class="video-monitor">
+                <div class="video-card">
+                    <img id="live-stream" src="./assets/mock-test/leopard.jpg" alt="Live Feed">
+                    <div id="scanner" class="scanner-line"></div>
+                </div>
+            </section>
+
+            <aside class="log-sidebar">
+                <h2>Recent Logs</h2>
+                <div class="log-container">
+                    <ul id="history-body">
+                        </ul>
+                </div>
+            </aside>
         </div>
     </div>
-
+    
     <script type="module" src="./scripts/app.js"></script>
 </body>
 </html>
