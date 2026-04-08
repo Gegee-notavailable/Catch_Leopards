@@ -1,0 +1,17 @@
+/* สีสถานะต่างๆ */
+.status-normal { background-color: #28a745; color: white; padding: 5px 15px; border-radius: 20px; }
+.status-warning { background-color: #ffc107; color: black; padding: 5px 15px; border-radius: 20px; }
+.status-danger { background-color: #dc3545; color: white; padding: 5px 15px; border-radius: 20px; }
+.status-info { background-color: #17a2b8; color: white; padding: 5px 15px; border-radius: 20px; }
+
+/* เอฟเฟกต์ขอบแดงกระพริบสำหรับหน้าจอวิดีโอ */
+.leopard-detected {
+    outline: 5px solid red;
+    animation: alert-pulse 0.5s infinite;
+}
+
+@keyframes alert-pulse {
+    0% { outline-color: red; }
+    50% { outline-color: transparent; }
+    100% { outline-color: red; }
+}
