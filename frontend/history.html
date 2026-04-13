@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leopard Detection - History</title>
+    <link rel="stylesheet" href="./styles/style.css">
+    <style>
+        /* สไตล์เพิ่มเติมสำหรับตารางในหน้านี้ */
+        .history-container {
+            padding: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .back-btn {
+            background-color: #444;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+
+        .back-btn:hover {
+            background-color: #555;
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #252525;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .history-table th {
+            background-color: #333;
+            color: #ffc107;
+            text-align: left;
+            padding: 15px;
+            font-weight: bold;
+            border-bottom: 2px solid #444;
+        }
+
+        /* ปรับแต่ง scrollbar สำหรับตารางถ้าข้อมูลเยอะ */
+        .table-wrapper {
+            max-height: 70vh;
+            overflow-y: auto;
+            border-radius: 12px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <header class="header-section">
+            <h1>📜 Detection History</h1>
+            <a href="index.html" class="back-btn">⬅ Back to Dashboard</a>
+        </header>
+
+        <main class="history-container">
+            <div class="table-wrapper">
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-table-body">
+                        <tr>
+                            <td colspan="3" style="text-align: center; padding: 20px; color: #888;">
+                                ⏳ Loading history data...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <script type="module" src="./scripts/app.js"></script>
+</body>
+
+</html>
