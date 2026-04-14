@@ -22,14 +22,20 @@ export async function renderHistoryTable(db) {
             const data = doc.data();
             const row = document.createElement("tr");
 
-            // ปรับแต่งหน้าตาแต่ละแถว
+            // ดึงวันที่จาก timestamp มาเตรียมไว้
+            const dateString = data.timestamp ? new Date(data.timestamp.toDate()).toLocaleDateString() : (data.date || '-');
+            const timeString = data.time || 'N/A';
+
+            // เรียงลำดับใหม่: DATE -> TIME -> STATUS
             row.innerHTML = `
-                <td style="padding: 12px; border-bottom: 1px solid #444;">${data.time || 'N/A'}</td>
-                <td style="padding: 12px; border-bottom: 1px solid #444;">
-                    <span style="color: #ffc107; font-weight: bold;">${data.status}</span>
+                <td style="padding: 15px 18px; border-bottom: 1px solid #333;">
+                    ${dateString}
                 </td>
-                <td style="padding: 12px; border-bottom: 1px solid #444; color: #888;">
-                    ${data.timestamp ? new Date(data.timestamp.toDate()).toLocaleDateString() : '-'}
+                <td style="padding: 15px 18px; border-bottom: 1px solid #333;">
+                    ${timeString}
+                </td>
+                <td style="padding: 15px 18px; border-bottom: 1px solid #333;">
+                    <span style="color: #ffc107; font-weight: bold;">${data.status}</span>
                 </td>
             `;
             historyBody.appendChild(row);

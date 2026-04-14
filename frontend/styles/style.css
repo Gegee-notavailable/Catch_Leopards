@@ -162,3 +162,25 @@ header {
     /* สีเหลืองแจ้งเตือน */
     font-size: 0.9rem;
 }
+
+/* สไตล์สำหรับปุ่ม View All History */
+.view-history-btn {
+    background-color: transparent;
+    color: #ffc107;
+    text-decoration: none;
+    font-size: 0.75rem;
+    font-weight: bold;
+    padding: 5px 15px;
+    border: 1.5px solid #ffc107;
+    border-radius: 20px;
+    transition: 0.3s;
+}
+
+.view-history-btn:hover {
+    background-color: #ffc107;
+    color: #000;
+}
+
+.view-history-btn:active {
+    transform: translateY(0);
+}
