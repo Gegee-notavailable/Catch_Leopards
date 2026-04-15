@@ -1,5 +1,4 @@
 import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -12,12 +11,7 @@ const firebaseConfig = {
     measurementId: "G-B4Z8F7NMCP"
 };
 
-// 1. ต้อง InitializeApp ก่อนเป็นอันดับแรก
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-
-// 2. แล้วค่อยเอา app ที่สร้างเสร็จแล้วมาใส่ใน getFirestore
 const db = getFirestore(app);
 
-// 3. ส่งออกไปใช้งาน
 export const initializeFirebase = () => db;

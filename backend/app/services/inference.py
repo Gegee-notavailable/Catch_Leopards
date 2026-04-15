@@ -1,53 +1,69 @@
-import onnxruntime as ort
-import numpy as np
-import time
+import ast
 import os
+import time
 
-# 1. ระบุ Path ของไฟล์โมเดล
-MODEL_PATH = os.path.join("app", "models", "model.onnx")
+import numpy as np
+import onnx
+import onnxruntime as ort
 
-# 2. โหลดโมเดลขึ้นมา (ทำครั้งเดียวตอน Start Server เพื่อความเร็ว)
+from app.services.postprocessing import postprocess
+
+MODEL_PATH = os.path.join(os.path.dirname(__file__), "..", "models", "best.onnx")
+
+# โหลดโมเดลครั้งเดียวตอน start server
 try:
-    session = ort.InferenceSession(MODEL_PATH, providers=['CPUExecutionProvider'])
+    session = ort.InferenceSession(MODEL_PATH, providers=["CPUExecutionProvider"])
     input_name = session.get_inputs()[0].name
-    print(f"✅ Model loaded successfully. Input name: {input_name}")
+    print(f"[OK] Model loaded. Input: {input_name}")
+
+    # อ่าน class names จาก ONNX metadata
+    CLASS_NAMES = []
+    try:
+        m = onnx.load(MODEL_PATH)
+        for prop in m.metadata_props:
+            if prop.key == "names":
+                names_dict = ast.literal_eval(prop.value)
+                CLASS_NAMES = [names_dict[i] for i in sorted(names_dict.keys())]
+                break
+    except Exception as e:
+        print(f"[WARN] Cannot read class names: {e}")
+
+    if not CLASS_NAMES:
+        CLASS_NAMES = [f"class_{i}" for i in range(80)]
+    print(f"[OK] Classes: {CLASS_NAMES}")
+
 except Exception as e:
-    print(f"❌ Failed to load model: {e}")
+    print(f"[ERR] Failed to load model: {e}")
     session = None
+    CLASS_NAMES = []
 
-def run_inference(input_tensor):
-    """
-    ฟังก์ชันสำหรับรัน Model ประมวลผล
-    :param input_tensor: ภาพที่ผ่านการเตรียม (Preprocessed) มาเป็น Numpy Array
-    :return: Dictionary ผลลัพธ์ที่สอดคล้องกับ DetectionResponse schema
-    """
+
+def run_inference(input_tensor: np.ndarray) -> dict:
     if session is None:
-        return {"status": "error", "message": "Model not loaded"}
+        return {
+            "status": "error",
+            "message": "Model not loaded",
+            "detections": [],
+            "count": 0,
+            "processing_time": 0.0,
+        }
 
-    start_time = time.time()
-
-    # --- Step 3: รันโมเดล (Inference) ---
-    # input_tensor ต้องมีมิติเป็น [1, 3, 640, 640] ตามที่ YOLO ต้องการ
+    start = time.time()
     outputs = session.run(None, {input_name: input_tensor})
+    detections, status = postprocess(outputs, CLASS_NAMES, conf_threshold=0.5)
+    elapsed = time.time() - start
 
-    # --- Step 4: ประมวลผล Output (Post-processing) ---
-    # หมายเหตุ: ผลลัพธ์จาก ONNX มักจะเป็น Array ดิบ 
-    # เราต้องส่งไปให้ postprocessing.py จัดการต่อ แต่เบื้องต้นผมจะจำลองการแปลงค่าให้ดูครับ
-    
-    # สมมติผลลัพธ์ (Mock-up logic)
-    # ในความเป็นจริงคุณต้องดึงค่าจาก outputs[0] มาทำ Non-Maximum Suppression (NMS)
-    detections = []
-    
-    # ตัวอย่างการดึงค่า (ต้องปรับตาม Output ของโมเดลคุณ)
-    # label = "leopard" if outputs_have_leopard else "none"
-    
-    processing_time = time.time() - start_time
+    if status == "leopard":
+        msg = f"Found leopard: {len(detections)}"
+    elif detections:
+        msg = f"Found animal: {len(detections)}"
+    else:
+        msg = "No animal detected"
 
-    # ส่งค่ากลับไปในรูปแบบที่สอดคล้องกับ schemas/response.py
     return {
-        "status": "leopard", # หรือจะดึงจาก Logic การตรวจจับ
-        "message": "Detection completed",
+        "status": status,
+        "message": msg,
         "detections": detections,
         "count": len(detections),
-        "processing_time": round(processing_time, 4)
+        "processing_time": round(elapsed, 4),
     }

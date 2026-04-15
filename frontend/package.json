@@ -4,11 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-  "dev": "vite",
-  "build": "vite build",
-  "preview": "vite preview"
-},
-
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Gegee-notavailable/Catch_Leopards.git"
@@ -16,12 +15,15 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "bugs": {
     "url": "https://github.com/Gegee-notavailable/Catch_Leopards/issues"
   },
   "homepage": "https://github.com/Gegee-notavailable/Catch_Leopards#readme",
   "devDependencies": {
     "vite": "^8.0.6"
+  },
+  "dependencies": {
+    "firebase": "^12.12.0"
   }
 }

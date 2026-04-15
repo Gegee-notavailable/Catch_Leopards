@@ -1,62 +1,59 @@
 import numpy as np
+import cv2
 
-def postprocess(outputs, conf_threshold=0.5, iou_threshold=0.4):
-    """
-    จัดการผลลัพธ์ดิบจาก ONNX Model
-    :param outputs: list ของ numpy arrays ที่ได้จาก session.run()
-    :param conf_threshold: ค่าความเชื่อมั่นขั้นต่ำ (0.0 - 1.0)
-    :param iou_threshold: ค่าการทับซ้อนสำหรับ NMS
-    :return: list ของ detections และสถานะสรุป
-    """
-    predictions = np.squeeze(outputs[0]) # ลดมิติจาก [1, 84, 8400] -> [84, 8400]
-    predictions = predictions.T # สลับแกนเพื่อให้แต่ละแถวคือ 1 detection [8400, 84]
+# class ที่ถือเป็นเสือดาว
+LEOPARD_KEYWORDS = ['leopard', 'panther', 'jaguar', 'tiger']
 
-    boxes = []
-    scores = []
-    class_ids = []
+def is_leopard(class_name):
+    name = class_name.lower()
+    return any(kw in name for kw in LEOPARD_KEYWORDS)
 
-    # 1. กรองเฉพาะรายการที่มีค่าความเชื่อมั่นสูงกว่า Threshold
+
+def postprocess(outputs, class_names, conf_threshold=0.5, iou_threshold=0.4):
+    """แปลง output ดิบจาก YOLO เป็น list ของ detections"""
+    predictions = np.squeeze(outputs[0]).T  # [N, 4+nc]
+
+    boxes_xywh, boxes_xyxy, scores, class_ids = [], [], [], []
+
     for pred in predictions:
-        # สมมติใช้ YOLOv8: 4 ค่าแรกคือ box (cx, cy, w, h) ที่เหลือคือ class scores
-        score = np.max(pred[4:]) 
+        cls_scores = pred[4:]
+        score = float(np.max(cls_scores))
         if score > conf_threshold:
-            # แปลง cx, cy, w, h -> x1, y1, x2, y2
             cx, cy, w, h = pred[0], pred[1], pred[2], pred[3]
-            x1 = cx - w / 2
-            y1 = cy - h / 2
-            x2 = cx + w / 2
-            y2 = cy + h / 2
-            
-            boxes.append([x1, y1, x2, y2])
+            x1, y1 = cx - w / 2, cy - h / 2
+            boxes_xywh.append([x1, y1, w, h])   # สำหรับ NMSBoxes ([x, y, w, h])
+            boxes_xyxy.append([x1, y1, x1 + w, y1 + h])  # สำหรับ output ([x1, y1, x2, y2])
             scores.append(score)
-            class_ids.append(np.argmax(pred[4:]))
+            class_ids.append(int(np.argmax(cls_scores)))
 
-    # 2. ทำ Non-Maximum Suppression (NMS) เพื่อลบกล่องที่ซ้อนกัน
-    # (ในขั้นตอนนี้มักใช้ cv2.dnn.NMSBoxes หรือเขียนฟังก์ชัน NMS เอง)
-    indices = nms_simple(boxes, scores, iou_threshold)
-    
-    final_detections = []
-    labels = ["leopard", "other_animal"] # ปรับตามลำดับ Class ในโมเดลคุณ
+    if not boxes_xywh:
+        return [], "clear"
 
-    for i in indices:
-        final_detections.append({
-            "label": labels[class_ids[i]],
-            "confidence": float(scores[i]),
-            "box": {
-                "x1": float(boxes[i][0]),
-                "y1": float(boxes[i][1]),
-                "x2": float(boxes[i][2]),
-                "y2": float(boxes[i][3])
-            }
-        })
+    # NMS จริง ใช้ของ OpenCV
+    indices = cv2.dnn.NMSBoxes(boxes_xywh, scores, conf_threshold, iou_threshold)
 
-    # สรุปสถานะเพื่อส่งให้ Frontend
-    status = "leopard" if any(d['label'] == "leopard" for d in final_detections) else "detecting"
-    
-    return final_detections, status
+    detections = []
+    if len(indices) > 0:
+        for i in np.array(indices).flatten():
+            cls_id = class_ids[i]
+            label = class_names[cls_id] if cls_id < len(class_names) else f"class_{cls_id}"
+            detections.append({
+                "label": label,
+                "confidence": float(scores[i]),
+                "box": {
+                    "x1": float(boxes_xyxy[i][0]),
+                    "y1": float(boxes_xyxy[i][1]),
+                    "x2": float(boxes_xyxy[i][2]),
+                    "y2": float(boxes_xyxy[i][3])
+                }
+            })
 
-def nms_simple(boxes, scores, threshold):
-    """ฟังก์ชัน NMS แบบง่าย (ลดรูป)"""
-    if not boxes: return []
-    # ในการใช้งานจริง แนะนำให้ใช้ cv2.dnn.NMSBoxes จะแม่นยำและเร็วกว่า
-    return range(len(boxes)) # ส่งคืน index ทั้งหมดไปก่อนเพื่อทดสอบ
+    # สรุป status
+    if any(is_leopard(d['label']) for d in detections):
+        status = "leopard"
+    elif detections:
+        status = "domestic"
+    else:
+        status = "clear"
+
+    return detections, status
