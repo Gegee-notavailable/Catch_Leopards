@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Leopard Detection</title>
     <link rel="stylesheet" href="./styles/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
 </head>
 
 <body>
@@ -32,6 +33,11 @@
     <div id="log-container">
         <ul id="history-body" style="list-style: none; padding: 0;">
             </ul>
+    </div>
+    <div class="live-feed-container">
+    <video id="live-video" autoplay playsinline muted 
+           style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">
+    </video>
     </div>
 </aside>
         </div>
