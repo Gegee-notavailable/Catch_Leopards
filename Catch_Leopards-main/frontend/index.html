@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leopard Detection</title>
+    <link rel="stylesheet" href="./styles/style.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <header>
+            <h1>Leopard Detection Dashboard</h1>
+            <div id="status-badge" class="status-normal">Connecting...</div>
+        </header>
+
+        <div class="main-layout">
+            <section class="video-monitor">
+                <div class="video-container">
+                    <img id="live-stream" src="./assets/mock-test/leopard.jpg" alt="Live Feed">
+                    <div id="scanner" class="scanner-line"></div>
+                </div>
+            </section>
+
+            <aside class="log-sidebar">
+    <div class="log-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2 style="margin: 0; font-size: 1.5rem; color: white;">Recent Logs</h2>
+        <a href="history.html" class="view-history-btn">VIEW ALL</a>
+    </div>
+
+    <div id="log-container">
+        <ul id="history-body" style="list-style: none; padding: 0;">
+            </ul>
+    </div>
+    <div class="live-feed-container">
+    <video id="live-video" autoplay playsinline muted 
+           style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">
+    </video>
+    </div>
+</aside>
+        </div>
+    </div>
+
+    <script type="module" src="./scripts/app.js"></script>
+</body>
+
+</html>
